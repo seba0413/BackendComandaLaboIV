@@ -6,14 +6,36 @@ class MesaApi
     {
         try
         {
-            $mesa = new App\Models\Mesa;
-            $mesasVacias = $mesa->where('id_estado', '=', '4')->get(); 
+            $clientesEsperaDao = new App\Models\ClientesEspera;
+            $clientesEspera = $clientesEsperaDao->where('enEspera', '=', '1')->get();
+
+            if(count($clientesEspera) > 0)
+            {
+                $respuesta = array("Estado"=>"Espera", "Clientes"=>$clientesEspera);
+                return $response->withJson($respuesta, 200);
+            }              
+            else
+            {
+                $mesa = new App\Models\Mesa;
+                $mesasVacias = $mesa->where('id_estado', '=', '4')->get(); 
+
+                if(count($mesasVacias) > 0)
+                {
+                    $respuesta = array("Estado"=>"Seleccion", "Mesas"=>$mesasVacias);
+                    return $response->withJson($respuesta, 200);
+                }
+                else
+                {
+                    $respuesta = array("Estado"=>"Proximo", "Mensaje"=>"Debe esperar a que se desocupe una mesa");
+                    return $response->withJson($respuesta, 200); 
+                }               
+            }                        
         }
         catch(Exception $e)
         {
             return $response->withJson($e->getMessage());
-        }
-        return $response->withJson($mesasVacias, 200);
+        }        
+        return $response->withJson($mesasVacias);
     }
 
     public function CargarMesa($request, $response, $args)

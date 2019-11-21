@@ -16,6 +16,7 @@ require_once "../app/models/tipo_empleado.php";
 require_once "../app/models/logger.php";
 require_once "../app/models/operacion.php";
 require_once "../app/models/factura.php";
+require_once "../app/models/clientesespera.php";
 require_once "middleware.php";
 
 return function (App $app) {
@@ -95,6 +96,8 @@ return function (App $app) {
 
     //MESA
     $app->get('/mesa/disponibles/', \MesaApi::class . ':GetMesasVacias');
+
+
     $app->post('/mesa/cargar/', \MesaApi::class . ':CargarMesa')
     ->add(\Middleware::class . ':SumarOperacion')
     ->add(\Middleware::class . ':ValidarMozo')
