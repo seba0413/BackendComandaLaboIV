@@ -74,9 +74,10 @@ class MesaApi
                                                         ->where('enEspera', '=', 1)
                                                         ->get();
 
+                $mensaje = $this->ArmarMensajeActualizarClientesEnEspera(count($clientesEnEspera));                               
+
                 return $response->withJson(array(   "Estado"=>"Alerta", 
-                                                    "Mensaje"=>"Todavia no tiene mesa asignada", 
-                                                    "ClientesEspera"=>count($clientesEnEspera)
+                                                    "Mensaje"=>$mensaje, 
                                                 )
                                             );                                        
             }
@@ -98,6 +99,17 @@ class MesaApi
         {
             return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
         }
+    }
+
+    private function ArmarMensajeActualizarClientesEnEspera($clientesEnEspera)
+    {
+        if($clientesEnEspera > 1)
+            return "Todavia no tenes mesa asignada. Hay " . $clientesEnEspera . " clientes primero";
+
+        else if($clientesEnEspera == 1)
+            return "Todavia no tenes mesa asignada. Hay 1 cliente primero";
+        else
+            return "Todavía no tenes mesa asignada. Sos el próximo";        
     }
 
     public function CargarMesa($request, $response, $args)
