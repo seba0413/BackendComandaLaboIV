@@ -82,7 +82,16 @@ class MesaApi
             }
             else
             {
-                return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Ya podes realizar tu pedido"));
+                $clienteEnEsperaAux = $clienteEnEsperaDao   ->where('idCliente', '=', $idCliente)
+                                                            ->join('mesas', 'mesas.id', '=', 'clientesespera.idMesa')
+                                                            ->first();
+
+                return $response->withJson(array(   "Estado"=>"Ok", 
+                                                    "Mensaje"=>"Ya podes realizar tu pedido",
+                                                    "idMesa"=>$clienteEnEsperaAux->idMesa,
+                                                    "Codigo"=>$clienteEnEsperaAux->codigo
+                                                )
+                                            );
             }
         }
         catch(Exception $e)
