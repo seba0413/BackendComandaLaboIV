@@ -42,7 +42,7 @@ class EmpleadoApi
                 $logger->horaIngreso = $horaActual;
                 $logger->save();
 
-                $mensaje = array("Estado" => "Ok", "Mensaje" => "Bienvenido " . $usuario, "Usuario" => $usuario, "Token" => $token, "TipoEmpleado" => $tipoEmpleado->tipoEmpleado);
+                $mensaje = array("Estado" => "Ok", "Token" => $token);
             }
             else
             {

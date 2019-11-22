@@ -96,6 +96,10 @@ return function (App $app) {
 
     //MESA
     $app->get('/mesa/disponibles/', \MesaApi::class . ':GetMesasVacias');
+    $app->post('/mesa/listaEspera/', \MesaApi::class . ':AgregarAListaDeEspera');
+    $app->get('/mesa/actualizar/{idCliente}', \MesaApi::class . ':ActualizarClienteEnEspera');
+    
+
 
 
     $app->post('/mesa/cargar/', \MesaApi::class . ':CargarMesa')

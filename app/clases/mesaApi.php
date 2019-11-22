@@ -38,6 +38,59 @@ class MesaApi
         return $response->withJson($mesasVacias);
     }
 
+    public function AgregarAListaDeEspera($request, $response, $args)
+    {
+        try
+        {
+            $data = file_get_contents('php://input');
+            $clienteAux= json_decode($data);
+    
+            $clienteEnEspera = new App\Models\ClientesEspera;
+    
+            $clienteEnEspera->idCliente = $clienteAux->idCliente;
+            $clienteEnEspera->enEspera = 1;
+            $clienteEnEspera->save();
+
+            return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Has sido agregado a la lista de espera"), 200);
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        } 
+    }
+
+    public function ActualizarClienteEnEspera($request, $response, $args)
+    {
+        try
+        {
+            $idCliente = $args['idCliente'];
+            $clienteEnEsperaDao = new App\Models\ClientesEspera;
+
+            $clienteEnEspera = $clienteEnEsperaDao->where('idCliente', '=', $idCliente)->first();
+
+            if($clienteEnEspera->idMesa == null)
+            {
+                $clientesEnEspera = $clienteEnEsperaDao ->where('id', '<', $clienteEnEspera->id)
+                                                        ->where('enEspera', '=', 1)
+                                                        ->get();
+
+                return $response->withJson(array(   "Estado"=>"Alerta", 
+                                                    "Mensaje"=>"Todavia no tiene mesa asignada", 
+                                                    "ClientesEspera"=>count($clientesEnEspera)
+                                                )
+                                            );                                        
+            }
+            else
+            {
+                return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Ya podes realizar tu pedido"));
+            }
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }
+    }
+
     public function CargarMesa($request, $response, $args)
     {
         $codigo = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 3)), 0, 5);
