@@ -66,7 +66,9 @@ class MesaApi
             $idCliente = $args['idCliente'];
             $clienteEnEsperaDao = new App\Models\ClientesEspera;
 
-            $clienteEnEspera = $clienteEnEsperaDao->where('idCliente', '=', $idCliente)->first();
+            $clienteEnEspera = $clienteEnEsperaDao  ->where('idCliente', '=', $idCliente)
+                                                    ->where('enEspera', '=', 1)        
+                                                    ->first();
 
             if($clienteEnEspera->idMesa == null)
             {
@@ -84,8 +86,13 @@ class MesaApi
             else
             {
                 $clienteEnEsperaAux = $clienteEnEsperaDao   ->where('idCliente', '=', $idCliente)
+                                                            ->where('enEspera', '=', 1)
                                                             ->join('mesas', 'mesas.id', '=', 'clientesespera.idMesa')
                                                             ->first();
+
+                 
+                $clienteEnEspera->enEspera = 0;
+                $clienteEnEspera->save();
 
                 return $response->withJson(array(   "Estado"=>"Ok", 
                                                     "Mensaje"=>"Ya podes realizar tu pedido",
