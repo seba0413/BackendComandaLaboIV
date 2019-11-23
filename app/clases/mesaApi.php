@@ -138,6 +138,27 @@ class MesaApi
         return $response->withJson($respuesta,200);
     } 
 
+    public function CambiarEstadoMesaAsignada($request, $response, $args)
+    {
+        try
+        {
+            $data = file_get_contents('php://input');
+            $codigoAux = json_decode($data);
+            $codigo = $codigoAux->codigo;
+    
+            $mesaDao = new App\Models\Mesa;
+            $mesa = $mesaDao->where('codigo', '=', $codigo)->first();
+            $mesa->id_estado = 5;
+            $mesa->save();
+
+            return $response->withJson(array("Estado"=>"Ok", "Mesaje"=>"Estado de mesa cambiado"));
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }    
+    }
+
     public function CambiarEstadoClienteEsperandoPedido($request, $response, $args)
     {
         $parametros = $request->getParsedBody();
