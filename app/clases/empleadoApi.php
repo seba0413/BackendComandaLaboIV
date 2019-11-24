@@ -66,48 +66,49 @@ class EmpleadoApi
                                                     ->first();
             if($clienteEnEspera)
             {
-                return $response->withJson(array("Estado"=>"Espera", "estadoCliente"=>"A"));
+                return $response->withJson(array("Estado"=>"Espera", "EstadoCliente"=>"A"));
             }
 
             $mesaDao = new App\Models\Mesa; 
-
             $mesa = $mesaDao ->where('id_clienteActual', '=', $idCliente)->first();
 
             if($mesa)
-            {
-                return $response->withJson(array(
-                                                    "Estado"=>"Mesa",
-                                                    "IdMesa"=>$mesa->id,
-                                                    "CodigoMesa"=>$mesa->codigo,
-                                                    "EstadoCliente"=>"S"
-                                                )
-                                            );
+            {                
+                $pedidoDao = new App\Models\Pedido;
+                $pedidos = $pedidoDao   ->where('idCliente', '=', $idCliente)
+                                        ->where('id_estadoPedido', '!=', 4)
+                                        ->get();
+                if(count($pedidos) > 0)
+                {
+                    $pedidosResponse = $pedidoDao   ->where('idCliente', '=', $idCliente)
+                                                    ->where('id_estadoPedido', '!=', 4)
+                                                    ->join('mesas', 'mesas.id', '=', 'pedidos.id_mesa')
+                                                    ->join('productos', 'productos.id', '=', 'pedidos.id_producto')
+                                                    ->select(   'pedidos.id_mesa', 'mesas.codigo as codigoMesa', 'productos.nombre', 
+                                                                'pedidos.codigo as codigoPedido')
+                                                    ->get();
+
+                    return $response->withJson(array(
+                                                        "Estado"=>"Pedidos", 
+                                                        "Datos"=>$pedidosResponse,
+                                                        "EstadoCliente"=>"S"
+                                                    )
+                                                );                                
+                }
+                else
+                {
+                    return $response->withJson(array(
+                                                        "Estado"=>"Mesa",
+                                                        "IdMesa"=>$mesa->id,
+                                                        "CodigoMesa"=>$mesa->codigo,
+                                                        "EstadoCliente"=>"S"
+                                                    )
+                                                );
+
+                }                
             }
 
-            $pedidoDao = new App\Models\Pedido;
-
-            $pedidos = $pedidoDao   ->where('idCliente', '=', $idCliente)
-                                    ->where('id_estadoPedido', '!=', 4)
-                                    ->get();
-            if(count($pedidos) > 0)
-            {
-                $pedidosResponse = $pedidoDao   ->where('idCliente', '=', $idCliente)
-                                                ->where('id_estadoPedido', '!=', 4)
-                                                ->join('mesas', 'mesas.id', '=', 'pedidos.id_mesa')
-                                                ->join('productos', 'productos.id', '=', 'pedidos.id_producto')
-                                                ->select(   'pedidos.id_mesa', 'mesas.codigo as codigoMesa', 'productos.nombre', 
-                                                            'pedidos.codigo as codigoPedido')
-                                                ->get();
-
-                return $response->withJson(array(
-                                                    "Estado"=>"Pedidos", 
-                                                    "Datos"=>$pedidosResponse,
-                                                    "estadoCliente"=>"S"
-                                                )
-                                            );                                
-            }
-            else
-                return $response->withJson(array("Estado"=>"Nuevo"));
+            return $response->withJson(array("Estado"=>"Nuevo"));
         }
         catch(Exception $e)
         {
