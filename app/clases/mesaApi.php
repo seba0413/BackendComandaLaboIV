@@ -38,6 +38,25 @@ class MesaApi
         return $response->withJson($mesasVacias);
     }
 
+    public function GetMesasVaciasMozo($request, $response, $args)
+    {
+        try
+        {
+            $mesasDao = new App\Models\Mesa;
+            $mesas = $mesasDao  ->where('id_estado', '=', 4)
+                                ->get();
+
+            if(count($mesas) > 0)
+                return $response->withJson(array("Estado"=>"Disponibles", "Mesas"=>$mesas));            
+            else
+                return $response->withJson(array("Estado"=>"Ocupadas"));
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=> $e->getMessage()));
+        }
+    }
+
     public function AgregarAListaDeEspera($request, $response, $args)
     {
         try

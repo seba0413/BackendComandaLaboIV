@@ -100,6 +100,8 @@ return function (App $app) {
 
     //MESA
     $app->get('/mesa/disponibles/', \MesaApi::class . ':GetMesasVacias');
+    $app->get('/mesa/disponibles/mozo/', \MesaApi::class . ':GetMesasVaciasMozo');
+    
     $app->post('/mesa/listaEspera/', \MesaApi::class . ':AgregarAListaDeEspera');
     $app->get('/mesa/actualizar/{idCliente}', \MesaApi::class . ':ActualizarClienteEnEspera');
     $app->post('/mesa/asignada/', \MesaApi::class . ':CambiarEstadoMesaAsignada');
