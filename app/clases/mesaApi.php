@@ -119,6 +119,30 @@ class MesaApi
             return "Todavía no tenes mesa asignada. Sos el próximo";        
     }
 
+    public function VerClientesEnEspera($request, $response, $args)
+    {
+        try
+        {
+            $clientesEnEsperaDao = new App\Models\ClientesEspera;
+            $clientesEnEspera = $clientesEnEsperaDao    ->where('enEspera', '=', 1)
+                                                        ->join('empleados', 'empleados.id', '=', 'clientesespera.idCliente') 
+                                                        ->select('clientesespera.id','empleados.id as idCliente', 'empleados.usuario')
+                                                        ->get();
+            if(count($clientesEnEspera) > 0)
+            {
+                return $response->withJson(array("Estado"=>"Clientes", "Clientes"=>$clientesEnEspera));                                            
+            }                                            
+            else
+            {
+                return $response->withJson(array("Estado"=>"Vacio"));
+            }            
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }
+    }
+
     public function CargarMesa($request, $response, $args)
     {
         $codigo = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 3)), 0, 5);
