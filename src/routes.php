@@ -65,6 +65,10 @@ return function (App $app) {
     ->add(\Middleware::class . ':ValidarToken');
 
     //EMPLEADO
+    $app->get('/cliente/estado/{idCliente}', \EmpleadoApi::class . ':RecuperarDatosCliente');
+    
+
+
     $app->post('/empleado/login/', \EmpleadoApi::class . ':LoginEmpleado');
     $app->get('/empleado/ingresos/', \EmpleadoApi::class . ':IngresosAlSistema')
     ->add(\Middleware::class . ':ValidarSocio')

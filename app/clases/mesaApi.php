@@ -145,10 +145,12 @@ class MesaApi
             $data = file_get_contents('php://input');
             $codigoAux = json_decode($data);
             $codigo = $codigoAux->codigo;
+            $idCliente = $codigoAux->idCliente;
     
             $mesaDao = new App\Models\Mesa;
             $mesa = $mesaDao->where('codigo', '=', $codigo)->first();
             $mesa->id_estado = 5;
+            $mesa->id_clienteActual = $idCliente;
             $mesa->save();
 
             return $response->withJson(array("Estado"=>"Ok", "Mesaje"=>"Estado de mesa cambiado"));

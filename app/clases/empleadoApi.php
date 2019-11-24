@@ -5,11 +5,7 @@ require_once 'token.php';
 class EmpleadoApi 
 {
     public function LoginEmpleado($request, $response, $args)
-    {
-        // $arrayDeParametros = $request->getParsedBody();
-        // $usuario = $arrayDeParametros['usuario'];
-        // $clave = $arrayDeParametros['clave'];
-        
+    {        
         $data = file_get_contents('php://input');
         $empleadoAux = json_decode($data);
         $usuario = $empleadoAux->usuario;
@@ -57,6 +53,67 @@ class EmpleadoApi
 
         return $response->withJson($mensaje,200);
     }   
+
+    public function RecuperarDatosCliente($request, $response, $args)
+    {
+        try
+        {
+            $idCliente = $args['idCliente'];
+            $clienteEnEsperaDao = new App\Models\ClientesEspera;
+
+            $clienteEnEspera = $clienteEnEsperaDao  ->where('idCliente', '=', $idCliente)
+                                                    ->where('enEspera', '=', 1)
+                                                    ->first();
+            if($clienteEnEspera)
+            {
+                return $response->withJson(array("Estado"=>"Espera", "estadoCliente"=>"A"));
+            }
+
+            $mesaDao = new App\Models\Mesa; 
+
+            $mesa = $mesaDao ->where('id_clienteActual', '=', $idCliente)->first();
+
+            if($mesa)
+            {
+                return $response->withJson(array(
+                                                    "Estado"=>"Mesa",
+                                                    "IdMesa"=>$mesa->id,
+                                                    "CodigoMesa"=>$mesa->codigo,
+                                                    "EstadoCliente"=>"S"
+                                                )
+                                            );
+            }
+
+            $pedidoDao = new App\Models\Pedido;
+
+            $pedidos = $pedidoDao   ->where('idCliente', '=', $idCliente)
+                                    ->where('id_estadoPedido', '!=', 4)
+                                    ->get();
+            if(count($pedidos) > 0)
+            {
+                $pedidosResponse = $pedidoDao   ->where('idCliente', '=', $idCliente)
+                                                ->where('id_estadoPedido', '!=', 4)
+                                                ->join('mesas', 'mesas.id', '=', 'pedidos.id_mesa')
+                                                ->join('productos', 'productos.id', '=', 'pedidos.id_producto')
+                                                ->select(   'pedidos.id_mesa', 'mesas.codigo as codigoMesa', 'productos.nombre', 
+                                                            'pedidos.codigo as codigoPedido')
+                                                ->get();
+
+                return $response->withJson(array(
+                                                    "Estado"=>"Pedidos", 
+                                                    "Datos"=>$pedidosResponse,
+                                                    "estadoCliente"=>"S"
+                                                )
+                                            );                                
+            }
+            else
+                return $response->withJson(array("Estado"=>"Nuevo"));
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }
+    }
     
     public function ListadoTiposDeEmpleado($request, $response, $args)
     {
