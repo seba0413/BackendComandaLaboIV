@@ -189,9 +189,21 @@ class MesaApi
             $codigoAux = json_decode($data);
             $codigo = $codigoAux->codigo;
             $idCliente = $codigoAux->idCliente;
-    
+
             $mesaDao = new App\Models\Mesa;
             $mesa = $mesaDao->where('codigo', '=', $codigo)->first();
+
+            $clienteEsperaDao = new App\Models\ClientesEspera;
+            $clienteEspera = $clienteEsperaDao  ->where('idCliente', '=', $idCliente)
+                                                ->where('enEspera', '=', 1)
+                                                ->first();
+
+            if($clienteEspera)
+            {
+                $clienteEspera->idMesa = $mesa->id;
+                $clienteEspera->save();
+            }    
+           
             $mesa->id_estado = 5;
             $mesa->id_clienteActual = $idCliente;
             $mesa->save();
