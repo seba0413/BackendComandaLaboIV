@@ -242,20 +242,33 @@ class MesaApi
 
     public function CambiarEstadoClienteEsperandoPedido($request, $response, $args)
     {
-        $parametros = $request->getParsedBody();
-        $codigo = $parametros['codigo'];
+        $data = file_get_contents('php://input');
+        $mesaAux= json_decode($data);
+        $codigo = $mesaAux->codigo;
+    
         $mesa = new App\Models\Mesa;
         $pedido = new App\Models\Pedido;
         try
         {
             $mesaActual = $mesa->where('codigo', '=', $codigo)->first();
 
-            $pedido->where('id_mesa', '=', $mesaActual->id)
-            ->whereNull('id_estadoMesa')
-            ->update(['id_estadoMesa' => 1]);
+            $pedidoAux =  $pedido   ->where('id_mesa', '=', $mesaActual->id)
+                                    ->whereNull('id_estadoMesa')
+                                    ->first();
+            if($pedidoAux)
+            {
+                $pedido ->where('id_mesa', '=', $mesaActual->id)
+                        ->whereNull('id_estadoMesa')
+                        ->update(['id_estadoMesa' => 1]);
+            }
+            else
+            {
+                return $response->withJson(array("Estado"=>"Error", "Mensaje"=>"El cliente todavía no realizó su pedido"));
+            }
+       
             $mesaActual->id_estado = 1;
             $mesaActual->save();
-            $mensaje = array("Mensaje" => "OK", "Estado" => "Mesa " . $mesaActual->id . " con clientes esperando el pedido");
+            $mensaje = array("Estado" => "Ok", "Mensaje" => "Mesa " . $mesaActual->id . " con clientes esperando el pedido");
         }
         catch(Exception $e)
         {

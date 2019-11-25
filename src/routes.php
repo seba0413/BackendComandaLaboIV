@@ -123,10 +123,10 @@ return function (App $app) {
     ->add(\Middleware::class . ':SumarOperacion')
     ->add(\Middleware::class . ':ValidarMozo')
     ->add(\Middleware::class . ':ValidarToken');
-    $app->post('/mesa/estado/esperando/', \MesaApi::class . ':CambiarEstadoClienteEsperandoPedido')
-    ->add(\Middleware::class . ':SumarOperacion')
-    ->add(\Middleware::class . ':ValidarMozo')
-    ->add(\Middleware::class . ':ValidarToken'); 
+    $app->post('/mesa/estado/esperando/', \MesaApi::class . ':CambiarEstadoClienteEsperandoPedido');
+    // ->add(\Middleware::class . ':SumarOperacion')
+    // ->add(\Middleware::class . ':ValidarMozo')
+    // ->add(\Middleware::class . ':ValidarToken'); 
     $app->post('/mesa/estado/comiendo/', \MesaApi::class . ':CambiarEstadoClienteComiendo')
     ->add(\Middleware::class . ':SumarOperacion')
     ->add(\Middleware::class . ':ValidarMozo')
