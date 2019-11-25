@@ -110,6 +110,10 @@ return function (App $app) {
     $app->get('/mesa/actualizar/{idCliente}', \MesaApi::class . ':ActualizarClienteEnEspera');
     $app->post('/mesa/asignada/', \MesaApi::class . ':CambiarEstadoMesaAsignada');
     $app->get('/clientes/espera/', \MesaApi::class . ':VerClientesEnEspera');
+
+    $app->get('/mesa/estado/{idEstado}', \MesaApi::class . ':ObtenerMesasConEstado');
+
+    
     
     
 

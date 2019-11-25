@@ -182,6 +182,29 @@ class MesaApi
         return $response->withJson($respuesta,200);
     } 
 
+    public function ObtenerMesasConEstado($request, $response, $args)
+    {
+        try
+        {
+            $idEstado = $args['idEstado'];
+            $mesaDao = new App\Models\Mesa;
+            $mesasConEstado = $mesaDao->where('id_estado', '=', $idEstado)->get();
+
+            if(count($mesasConEstado) > 0)
+            {
+                return $response->withJson(array("Estado"=>"Ok", "Mesas"=>$mesasConEstado));
+            }
+            else
+            {
+                return $response->withJson(array("Estado"=>"SinMesas"));
+            }
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }
+    }
+
     public function CambiarEstadoMesaAsignada($request, $response, $args)
     {
         try

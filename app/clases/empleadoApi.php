@@ -138,7 +138,7 @@ class EmpleadoApi
                                                     ->where('enEspera', '=', 1)
                                                     ->join('mesas', 'mesas.id', '=', 'clientesespera.idMesa')
                                                     ->select('clientesespera.idMesa', 'mesas.codigo')
-                                                    ->get();
+                                                    ->first();
                                                     
                     $clienteEnEspera->enEspera = 0;
                     $clienteEnEspera->save(); 
