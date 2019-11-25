@@ -281,8 +281,9 @@ class MesaApi
 
     public function CambiarEstadoClienteComiendo($request, $response, $args)
     {
-        $parametros = $request->getParsedBody();
-        $codigo = $parametros['codigo'];
+        $data = file_get_contents('php://input');
+        $mesaAux= json_decode($data);
+        $codigo = $mesaAux->codigo;
         $mesa = new App\Models\Mesa;
         $pedido = new App\Models\Pedido;
         try
@@ -297,7 +298,7 @@ class MesaApi
 
                 $mesaActual->id_estado = 2;
                 $mesaActual->save();
-                $mensaje = array("Mensaje" => "OK", "Estado" => "Mesa " . $mesaActual->id . " con clientes comiendo");
+                $mensaje = array("Estado" => "Ok", "Mensaje" => "Mesa " . $mesaActual->id . " con clientes comiendo");
             }
             else
             {
@@ -315,8 +316,10 @@ class MesaApi
 
     public function CambiarEstadoClientePagando($request, $response, $args)
     {
-        $parametros = $request->getParsedBody();
-        $codigo = $parametros['codigo'];
+        $data = file_get_contents('php://input');
+        $mesaAux= json_decode($data);
+        $codigo = $mesaAux->codigo;
+        
         $mesa = new App\Models\Mesa;
         $pedido = new App\Models\Pedido;
         try
@@ -351,7 +354,7 @@ class MesaApi
 
                 $mesaActual->id_estado = 3;
                 $mesaActual->save();
-                $mensaje = array("Mensaje" => "OK", "Estado" => "Mesa " . $mesaActual->id . " con clientes pagando");
+                $mensaje = array("Estado" => "Ok", "Mensaje" => "Mesa " . $mesaActual->id . " con clientes pagando");
             }
             else
             {

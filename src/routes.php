@@ -127,14 +127,14 @@ return function (App $app) {
     // ->add(\Middleware::class . ':SumarOperacion')
     // ->add(\Middleware::class . ':ValidarMozo')
     // ->add(\Middleware::class . ':ValidarToken'); 
-    $app->post('/mesa/estado/comiendo/', \MesaApi::class . ':CambiarEstadoClienteComiendo')
-    ->add(\Middleware::class . ':SumarOperacion')
-    ->add(\Middleware::class . ':ValidarMozo')
-    ->add(\Middleware::class . ':ValidarToken'); 
-    $app->post('/mesa/estado/pagando/', \MesaApi::class . ':CambiarEstadoClientePagando')
-    ->add(\Middleware::class . ':SumarOperacion')
-    ->add(\Middleware::class . ':ValidarMozo')
-    ->add(\Middleware::class . ':ValidarToken');
+    $app->post('/mesa/estado/comiendo/', \MesaApi::class . ':CambiarEstadoClienteComiendo');
+    // ->add(\Middleware::class . ':SumarOperacion')
+    // ->add(\Middleware::class . ':ValidarMozo')
+    // ->add(\Middleware::class . ':ValidarToken'); 
+    $app->post('/mesa/estado/pagando/', \MesaApi::class . ':CambiarEstadoClientePagando');
+    // ->add(\Middleware::class . ':SumarOperacion')
+    // ->add(\Middleware::class . ':ValidarMozo')
+    // ->add(\Middleware::class . ':ValidarToken');
     $app->post('/mesa/estado/cerrada/', \MesaApi::class . ':CambiarEstadoCerrada')
     ->add(\Middleware::class . ':SumarOperacion')
     ->add(\Middleware::class . ':ValidarSocio')
