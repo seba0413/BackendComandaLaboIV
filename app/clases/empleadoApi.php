@@ -116,6 +116,59 @@ class EmpleadoApi
         }
     }
 
+    public function MozoRecuperaDatosCliente($request, $response, $args)
+    {
+        try
+        {
+            $idCliente = $args['idCliente'];
+            $clienteEnEsperaDao = new App\Models\ClientesEspera;
+
+            $clienteEnEspera = $clienteEnEsperaDao  ->where('idCliente', '=', $idCliente)
+                                                    ->where('enEspera', '=', 1)
+                                                    ->first();
+
+            if($clienteEnEspera)
+            {
+                if($clienteEnEspera->idMesa == null){
+                    return $response->withJson(array("Estado"=>"Espera", "Mensaje"=>"Cliente en espera"));
+                }
+                else
+                {
+                    $datosMesa = $clienteEnEsperaDao->where('idCliente', '=', $idCliente)
+                                                    ->where('enEspera', '=', 1)
+                                                    ->join('mesas', 'mesas.id', '=', 'clientesespera.idMesa')
+                                                    ->select('clientesespera.idMesa', 'mesas.codigo')
+                                                    ->get();
+                                                    
+                    $clienteEnEspera->enEspera = 0;
+                    $clienteEnEspera->save(); 
+
+                    return $response->withJson(array("Estado"=>"Mesa", "Datos"=> $datosMesa));
+                }
+            }
+            else
+            {
+                $mesa = new App\Models\Mesa;
+                $mesasVacias = $mesa->where('id_estado', '=', '4')->get(); 
+
+                if(count($mesasVacias) > 0)
+                {
+                    $respuesta = array("Estado"=>"Seleccion", "Mesas"=>$mesasVacias);
+                    return $response->withJson($respuesta, 200);
+                }
+                else
+                {
+                    $respuesta = array("Estado"=>"Ocupadas", "Mensaje"=>"No hay mesas disponibles. Poner al cliente en espera");
+                    return $response->withJson($respuesta, 200); 
+                }               
+            }
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }    
+    }
+
     public function BuscarCliente($request, $response, $args)
     {
         try
