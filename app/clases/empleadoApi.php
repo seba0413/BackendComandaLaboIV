@@ -643,6 +643,34 @@ class EmpleadoApi
         return $response->withJson($mensaje, 200);    
     }
 
+    public function GuardarFoto($request, $response, $args)
+    {
+        $url = 'http://localhost:80/apiComanda/tp_pg3/public/fotos/';
+        try
+        {
+            $foto = $_FILES['image'];
+            $ruta = $foto['tmp_name'];
+            $extension = explode(".",$foto['name']);
+            $index = count($extension) - 1; 
+            $rutafoto = "./fotos/{$extension[0]}.{$extension[$index]}";
+            move_uploaded_file($ruta, $rutafoto); 
+
+            $empleadoDao = new App\Models\Empleado;
+            $empleado = $empleadoDao->orderBy('id', 'desc')
+                                    ->first();
+
+            $empleado->foto = $url . $extension[0] . '.' . $extension[$index];
+            $empleado->save();
+
+            return $response->withJson(array("Estado" => "Ok", "Mensaje" => "Foto Guardada"),200);  
+            
+        }
+        catch(Exception $e)
+        {     
+            return $response->withJson(array("Estado" => "Error", "Mensaje" => "Error al guardar la foto"),200);
+        }
+    }
+
     public function ListadoEmpleados($request, $response, $args)
     {
         $empleado = new App\Models\Empleado;

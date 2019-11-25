@@ -89,6 +89,10 @@ return function (App $app) {
     $app->post('/empleado/alta/', \EmpleadoApi::class . ':AltaEmpleado');
     // ->add(\Middleware::class . ':ValidarSocio')
     // ->add(\Middleware::class . ':ValidarToken');
+
+    $app->post('/usuario/foto/', \EmpleadoApi::class . ':GuardarFoto');
+
+
     $app->get('/empleado/listado/', \EmpleadoApi::class . ':ListadoEmpleados')
     ->add(\Middleware::class . ':ValidarSocio')
     ->add(\Middleware::class . ':ValidarToken');    
