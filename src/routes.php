@@ -31,6 +31,8 @@ return function (App $app) {
     // ->add(\Middleware::class . ':SumarOperacion')
     // ->add(\Middleware::class . ':ValidarMozo')
     // ->add(\Middleware::class . ':ValidarToken');
+
+    
     $app->get('/pedido/pendientes/', \PedidoApi::class . ':VerPedidosPendientes')
     ->add(\Middleware::class . ':SumarOperacion')
     ->add(\Middleware::class . ':ValidarToken');
@@ -90,6 +92,7 @@ return function (App $app) {
     // ->add(\Middleware::class . ':ValidarSocio')
     // ->add(\Middleware::class . ':ValidarToken');
 
+    $app->get('/usuario/buscar/{idUsuario}', \EmpleadoApi::class . ':BuscarUsuario');    
     $app->post('/usuario/foto/', \EmpleadoApi::class . ':GuardarFoto');
 
 

@@ -198,6 +198,26 @@ class EmpleadoApi
         }
     }
     
+    public function BuscarUsuario($request, $response, $args)
+    {
+        try
+        {
+            $idUsuario = $args['idUsuario'];
+            $usuarioDao = new App\Models\Empleado; 
+
+            $usuario = $usuarioDao  ->where('id', '=', $idUsuario)
+                                    ->select('id','usuario', 'foto')
+                                    ->first();
+
+            return $response->withJson(array("Estado"=>"Ok", "Usuario"=>$usuario));
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }
+    }
+
+
     public function ListadoTiposDeEmpleado($request, $response, $args)
     {
         $tipos = new App\Models\TipoEmpleado;

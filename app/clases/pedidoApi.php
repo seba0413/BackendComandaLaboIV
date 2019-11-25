@@ -94,34 +94,39 @@ class PedidoApi
 
     public function VerPedidosPendientes($request, $response, $args)
     {
-        $payload = $request->getAttribute("payload")["Payload"];
-        $infoEmpleado = $payload->data;
+        try
+        {        
+            $payload = $request->getAttribute("payload")["Payload"];
+            $infoEmpleado = $payload->data;
 
-        $idSector = $infoEmpleado->id_sector;
+            $idSector = $infoEmpleado->id_sector;
 
-        $pedido = new App\Models\Pedido;
+            $pedido = new App\Models\Pedido;
 
-        $pedidosPendientes = $pedido->rightJoin('productos', 'pedidos.id_producto', '=', 'productos.id')
-        ->where('pedidos.id_estadoPedido', '=', 1)->get();
+            $pedidosPendientes = $pedido    ->join('productos', 'pedidos.id_producto', '=', 'productos.id')
+                                            ->where('pedidos.id_estadoPedido', '=', 1)
+                                            ->where('productos.id_sector', '=', $idSector)  
+                                            ->select(   'productos.nombre as producto',
+                                                        'pedidos.cantidad',
+                                                        'pedidos.codigo as codigo',
+                                                        'pedidos.id_mesa as mesa'
+                                                    )  
+                                            ->get();
 
-        $mensaje = [];
-        $flag = false; 
-
-        for($i = 0; $i < count($pedidosPendientes); $i++)
-        {
-            if($pedidosPendientes[$i]->id_sector == $idSector)
+            if(count($pedidosPendientes) > 0)
             {
-                $flag = true;
-                echo    "\nProducto: " . $pedidosPendientes[$i]->nombre .    
-                        "\nCantidad: " . $pedidosPendientes[$i]->cantidad .                         
-                        "\nMesa: " . $pedidosPendientes[$i]->id_mesa . 
-                        "\nCliente: " . $pedidosPendientes[$i]->nombreCliente .
-                        "\nCodigo: " . $pedidosPendientes[$i]->codigo .
-                        "\n------------------------";
+                return $response->withJson(array("Estado"=>"Ok", "Pedidos"=>$pedidosPendientes));
+            }    
+            else
+            {
+                return $response->withJson(array("Estado"=>"SinPedidos"));
             }
         }
-        if(!$flag)
-            echo 'No tiene pedidos pendientes';
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }                            
+
     }
 
     public function TomarPedido($request, $response, $args)
