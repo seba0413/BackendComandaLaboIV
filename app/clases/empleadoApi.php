@@ -115,6 +115,35 @@ class EmpleadoApi
             return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
         }
     }
+
+    public function BuscarCliente($request, $response, $args)
+    {
+        try
+        {
+            $data = file_get_contents('php://input');
+            $clienteAux = json_decode($data);
+            $nombreCliente = $clienteAux->usuario;
+
+            $empleadoDao = new App\Models\Empleado;
+            $cliente = $empleadoDao ->where('usuario', '=', $nombreCliente)
+                                    ->where('id_tipoEmpleado', '=', 7)
+                                    ->select('id', 'usuario')
+                                    ->first();
+
+            if($cliente)
+            {
+                return $response->withJson(array("Estado"=>"Ok", "Cliente"=>$cliente));
+            }                        
+            else
+            {
+                return $response->withJson(array("Estado"=>"Error", "Mensaje"=>"Cliente no encontrado"));
+            }
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }
+    }
     
     public function ListadoTiposDeEmpleado($request, $response, $args)
     {

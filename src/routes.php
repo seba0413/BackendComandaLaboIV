@@ -66,6 +66,8 @@ return function (App $app) {
 
     //EMPLEADO
     $app->get('/cliente/estado/{idCliente}', \EmpleadoApi::class . ':RecuperarDatosCliente');
+    $app->post('/cliente/buscar/', \EmpleadoApi::class . ':BuscarCliente');
+
     
 
 
