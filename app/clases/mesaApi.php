@@ -126,7 +126,7 @@ class MesaApi
             return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
         }
     }
-
+        
     private function ArmarMensajeActualizarClientesEnEspera($clientesEnEspera)
     {
         if($clientesEnEspera > 1)
@@ -144,6 +144,7 @@ class MesaApi
         {
             $clientesEnEsperaDao = new App\Models\ClientesEspera;
             $clientesEnEspera = $clientesEnEsperaDao    ->where('enEspera', '=', 1)
+                                                        ->whereNull('idMesa')
                                                         ->join('empleados', 'empleados.id', '=', 'clientesespera.idCliente') 
                                                         ->select('clientesespera.id','empleados.id as idCliente', 'empleados.usuario')
                                                         ->get();
@@ -208,7 +209,7 @@ class MesaApi
             $mesa->id_clienteActual = $idCliente;
             $mesa->save();
 
-            return $response->withJson(array("Estado"=>"Ok", "Mesaje"=>"Estado de mesa cambiado"));
+            return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Mesa asignada"));
         }
         catch(Exception $e)
         {
