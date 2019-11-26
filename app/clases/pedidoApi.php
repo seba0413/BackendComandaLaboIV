@@ -98,13 +98,14 @@ class PedidoApi
         {        
             $payload = $request->getAttribute("payload")["Payload"];
             $infoEmpleado = $payload->data;
+            $estadoPedido = $args['estadoPedido'];
 
             $idSector = $infoEmpleado->id_sector;
 
             $pedido = new App\Models\Pedido;
 
             $pedidosPendientes = $pedido    ->join('productos', 'pedidos.id_producto', '=', 'productos.id')
-                                            ->where('pedidos.id_estadoPedido', '=', 1)
+                                            ->where('pedidos.id_estadoPedido', '=', $estadoPedido)
                                             ->where('productos.id_sector', '=', $idSector)  
                                             ->select(   'productos.nombre as producto',
                                                         'pedidos.cantidad',
@@ -131,39 +132,42 @@ class PedidoApi
 
     public function TomarPedido($request, $response, $args)
     {
-        $payload = $request->getAttribute("payload")["Payload"];
-        $infoEmpleado = $payload->data;
-        $idSector = $infoEmpleado->id_sector;
-
-        $parametros = $request->getParsedBody();
-        $codigo = $parametros['codigo'];
-        $tiempoEstimado = $parametros['tiempoEstimado'];
-        $pedido = new App\Models\Pedido;
         try
         {
+            $payload = $request->getAttribute("payload")["Payload"];
+            $infoEmpleado = $payload->data;
+
+            $data = file_get_contents('php://input');
+            $pedidoAux = json_decode($data);
+            $codigo = $pedidoAux->codigo;
+            $tiempoEstimado = $pedidoAux->tiempoEstimado;
+
+            $pedido = new App\Models\Pedido;
+     
             $pedidoATomar = $pedido->where('codigo', '=', $codigo)->firstOrFail();        
 
-            $idSectorProducto = $pedido->join('productos', 'pedidos.id_producto', '=', 'productos.id')
-                                        ->where('productos.id', '=', $pedidoATomar->id_producto)
-                                        ->select('productos.id_sector')->firstOrFail();
-
-            $horaActual = new DateTime('now', new DateTimeZone('America/Argentina/Buenos_Aires'));
-            $horaActual->add(new DateInterval('PT' . $tiempoEstimado . 'M'));
-            $horaEntregaEstimada = $horaActual->format('H:i');
-
-            $pedidoATomar->id_estadoPedido = 2;
-            $pedidoATomar->tiempoEstimado = $tiempoEstimado;
-            $pedidoATomar->horaEntregaEstimada = $horaEntregaEstimada;
-            $pedidoATomar->id_empleado = $infoEmpleado->id;
-            $pedidoATomar->save();
-            $mensaje = array("Estado" => "Ok", "Mensaje " => "Pedido en preparacion ");
+            if($pedidoATomar)
+            {
+                $horaActual = new DateTime('now', new DateTimeZone('America/Argentina/Buenos_Aires'));
+                $horaActual->add(new DateInterval('PT' . $tiempoEstimado . 'M'));
+                $horaEntregaEstimada = $horaActual->format('H:i');
+    
+                $pedidoATomar->id_estadoPedido = 2;
+                $pedidoATomar->tiempoEstimado = $tiempoEstimado;
+                $pedidoATomar->horaEntregaEstimada = $horaEntregaEstimada;
+                $pedidoATomar->id_empleado = $infoEmpleado->id;
+                $pedidoATomar->save();
+                return $response->withJson(array("Estado" => "Ok", "Mensaje" => "Pedido en preparacion"));
+            }
+            else
+            {
+                return $response->withJson(array("Estado" => "Error", "Mensaje" => "Pedido no encontrado"));
+            } 
         }
         catch(Exception $e)
         {
-            $error = $e->getMessage();
-            $mensaje = array("Estado" => "Error", "Mensaje " => $error);
+            return $response->withJson(array("Estado" => "Error", "Mensaje" => $e->getMessage()));
         }     
-        return $response->withJson($mensaje,200);
     }
 
     public function ServirPedido($request, $response, $args)

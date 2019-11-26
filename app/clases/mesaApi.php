@@ -66,11 +66,21 @@ class MesaApi
     
             $clienteEnEspera = new App\Models\ClientesEspera;
     
-            $clienteEnEspera->idCliente = $clienteAux->idCliente;
-            $clienteEnEspera->enEspera = 1;
-            $clienteEnEspera->save();
-
-            return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Has sido agregado a la lista de espera"), 200);
+            $clienteEnEsperaAux = $clienteEnEspera  ->where('idCliente', '=', $clienteAux->idCliente)
+                                                    ->where('enEspera', '=', 1)
+                                                    ->first();
+            if($clienteEnEsperaAux)
+            {
+                return $response->withJson(array("Estado"=>"Alerta", "Mensaje"=>"El cliente ya se encuentra en lista de espera"));
+            }
+            else
+            {
+                $clienteEnEspera->idCliente = $clienteAux->idCliente;
+                $clienteEnEspera->enEspera = 1;
+                $clienteEnEspera->save();
+    
+                return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Has sido agregado a la lista de espera"));
+            }                                        
         }
         catch(Exception $e)
         {
@@ -292,9 +302,19 @@ class MesaApi
 
             if($mesaActual->id_estado == 1)
             {
-                $pedido->where('id_mesa', '=', $mesaActual->id)
-                ->where('id_estadoMesa', '=', 1)
-                ->update(['id_estadoMesa' => 2]);
+                $pedidos = $pedido  ->where('id_mesa', '=', $mesaActual->id)
+                                    ->where('id_estadoMesa', '=', 1)
+                                    ->get();
+
+                if(count($pedidos) > 0)
+                {
+                    for ($i = 0; $i < count($pedidos); $i++) 
+                    { 
+                        $pedidos[$i]->id_estadoMesa = 2;
+                        $pedidos[$i]->id_estadoPedido = 4;
+                        $pedidos[$i]->save();
+                    }
+                }            
 
                 $mesaActual->id_estado = 2;
                 $mesaActual->save();

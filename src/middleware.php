@@ -5,7 +5,7 @@ require_once "../app/clases/token.php";
 class Middleware
 {
     public static function ValidarToken($request,$response,$next){
-        $token = $request->getHeader("Autorizacion");
+        $token = $request->getHeader("Authorization");
         $validacionToken = Token::VerificarToken($token[0]);
         if($validacionToken["Estado"] == "OK"){
             $request = $request->withAttribute("payload", $validacionToken);

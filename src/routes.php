@@ -33,12 +33,12 @@ return function (App $app) {
     // ->add(\Middleware::class . ':ValidarToken');
 
     
-    $app->get('/pedido/pendientes/', \PedidoApi::class . ':VerPedidosPendientes')
+    $app->get('/pedido/pendientes/{estadoPedido}', \PedidoApi::class . ':VerPedidosPendientes')
     ->add(\Middleware::class . ':SumarOperacion')
     ->add(\Middleware::class . ':ValidarToken');
-    $app->post('/pedido/tomar/', \PedidoApi::class . ':TomarPedido');
-    // ->add(\Middleware::class . ':SumarOperacion')
-    // ->add(\Middleware::class . ':ValidarToken');
+    $app->post('/pedido/tomar/', \PedidoApi::class . ':TomarPedido')
+    ->add(\Middleware::class . ':SumarOperacion')
+    ->add(\Middleware::class . ':ValidarToken');
     $app->post('/pedido/servir/', \PedidoApi::class . ':ServirPedido')
     ->add(\Middleware::class . ':SumarOperacion')
     ->add(\Middleware::class . ':ValidarToken');
