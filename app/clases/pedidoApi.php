@@ -43,7 +43,7 @@ class PedidoApi
             $idMesa = $pedidoAux->idMesa;
             $idProducto = $pedidoAux->idProducto;
             $cantidad = $pedidoAux->cantidad;
-            $nombreCliente = $pedidoAux->nombreCliente;
+            // $nombreCliente = $pedidoAux->nombreCliente;
             $idCliente = $pedidoAux->idCliente;
             $codigo = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 3)), 0, 5);
             date_default_timezone_set("America/Argentina/Buenos_Aires");

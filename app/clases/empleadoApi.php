@@ -176,12 +176,24 @@ class EmpleadoApi
             $data = file_get_contents('php://input');
             $clienteAux = json_decode($data);
             $nombreCliente = $clienteAux->usuario;
+            $tipoUsuario = $clienteAux->tipoUsuario;
 
             $empleadoDao = new App\Models\Empleado;
-            $cliente = $empleadoDao ->where('usuario', '=', $nombreCliente)
-                                    ->where('id_tipoEmpleado', '=', 7)
-                                    ->select('id', 'usuario')
-                                    ->first();
+            
+
+            if($tipoUsuario == 'cliente')
+            {
+                $cliente = $empleadoDao ->where('usuario', '=', $nombreCliente)
+                                        ->where('id_tipoEmpleado', '=', 7)
+                                        ->select('id', 'usuario')
+                                        ->first();            
+            }
+            else 
+            {
+                $cliente = $empleadoDao ->where('usuario', '=', $nombreCliente)
+                                        ->select('id', 'usuario')
+                                        ->first();             
+            }            
 
             if($cliente)
             {
@@ -217,13 +229,38 @@ class EmpleadoApi
         }
     }
 
-
     public function ListadoTiposDeEmpleado($request, $response, $args)
     {
         $tipos = new App\Models\TipoEmpleado;
         $listaTipos = $tipos->get();
 
         return $response->withJson($listaTipos, 200);
+    }
+
+    public function AsignarTipoUsuario($request, $response, $args)
+    {
+        try
+        {
+            $data = file_get_contents('php://input');
+            $usuarioAux = json_decode($data);
+    
+            $idUsuario = $usuarioAux->idUsuario;
+            $idTipoUsuario = $usuarioAux->idTipoUsuario;
+
+            $usuarioDao = new App\Models\Empleado;
+
+            $usuario = $usuarioDao->where('id', '=', $idUsuario)->first();
+            $usuario->id_tipoEmpleado = $idTipoUsuario;
+            $usuario->id_sector = $idTipoUsuario;
+            $usuario->activo = 1; 
+            $usuario->save();
+
+            return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Tipo de usuario asignado"));
+        }
+        catch(Exception $e)
+        {
+            return $response->withJson(array("Estado"=>"Error", "Mensaje"=>$e->getMessage()));
+        }
     }
 
     public function IngresosAlSistema($request, $response, $args)
