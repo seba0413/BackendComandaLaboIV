@@ -392,8 +392,10 @@ class MesaApi
 
     public function CambiarEstadoCerrada($request, $response, $args)
     {
-        $parametros = $request->getParsedBody();
-        $codigo = $parametros['codigo'];
+        $data = file_get_contents('php://input');
+        $mesaAux= json_decode($data);
+        $codigo = $mesaAux->codigo;
+
         $mesa = new App\Models\Mesa;
         $pedido = new App\Models\Pedido;
 
@@ -403,13 +405,13 @@ class MesaApi
 
             if($mesaActual->id_estado == 3)
             {
-                $pedido->where('id_mesa', '=', $mesaActual->id)
-                ->where('id_estadoMesa', '=', 3)
-                ->update(['id_estadoMesa' => 4]);
+                $pedido ->where('id_mesa', '=', $mesaActual->id)
+                        ->where('id_estadoMesa', '=', 3)
+                        ->update(['id_estadoMesa' => 4]);
 
                 $mesaActual->id_estado = 4;
                 $mesaActual->save();
-                $mensaje = array("Mensaje" => "OK", "Estado" => "Mesa " . $mesaActual->id . " cerrada");
+                $mensaje = array("Estado" => "Ok", "Mensaje" => "Mesa " . $mesaActual->id . " cerrada");
             }
             else
             {
