@@ -27,25 +27,12 @@ return function (App $app) {
     $app->get('/pedido/vino/', \PedidoApi::class . ':GetVinos');
     $app->get('/pedido/cerveza/', \PedidoApi::class . ':GetCervezas');
     $app->get('/pedido/postre/', \PedidoApi::class . ':GetPostres');
-    $app->post('/pedido/cargar/', \PedidoApi::class . ':CargarPedido');
-    // ->add(\Middleware::class . ':SumarOperacion')
-    // ->add(\Middleware::class . ':ValidarMozo')
-    // ->add(\Middleware::class . ':ValidarToken');
-
+    $app->post('/pedido/cargar/', \PedidoApi::class . ':CargarPedido');    
+    $app->post('/pedido/pendientes/', \PedidoApi::class . ':VerPedidosPendientes');
     
-    $app->get('/pedido/pendientes/{estadoPedido}', \PedidoApi::class . ':VerPedidosPendientes')
-    ->add(\Middleware::class . ':SumarOperacion')
-    ->add(\Middleware::class . ':ValidarToken');
-    $app->post('/pedido/tomar/', \PedidoApi::class . ':TomarPedido')
-    ->add(\Middleware::class . ':SumarOperacion')
-    ->add(\Middleware::class . ':ValidarToken');
-    $app->post('/pedido/servir/', \PedidoApi::class . ':ServirPedido')
-    ->add(\Middleware::class . ':SumarOperacion')
-    ->add(\Middleware::class . ':ValidarToken');
-    $app->get('/pedido/estados/', \PedidoApi::class . ':VerEstadoPedidos')
-    ->add(\Middleware::class . ':SumarOperacion')
-    ->add(\Middleware::class . ':ValidarSocio')
-    ->add(\Middleware::class . ':ValidarToken');     
+    $app->post('/pedido/tomar/', \PedidoApi::class . ':TomarPedido');
+    $app->post('/pedido/servir/', \PedidoApi::class . ':ServirPedido');
+    $app->get('/pedido/estados/', \PedidoApi::class . ':VerEstadoPedidos');    
     
     $app->get('/pedido/tiempoRestante/{codigoMesa}/{codigoPedido}/', \PedidoApi::class . ':TiempoRestante');
 
@@ -70,16 +57,7 @@ return function (App $app) {
     $app->get('/cliente/estado/{idCliente}', \EmpleadoApi::class . ':RecuperarDatosCliente');
     $app->post('/cliente/buscar/', \EmpleadoApi::class . ':BuscarCliente');
     $app->get('/cliente/estado/mozo/{idCliente}', \EmpleadoApi::class . ':MozoRecuperaDatosCliente');
-    $app->post('/usuario/asignarTipo/', \EmpleadoApi::class . ':AsignarTipoUsuario')
-    ->add(\Middleware::class . ':ValidarSocio')
-    ->add(\Middleware::class . ':ValidarToken');   
-
-    
-    
-
-    
-
-
+    $app->post('/usuario/asignarTipo/', \EmpleadoApi::class . ':AsignarTipoUsuario');   
     $app->post('/empleado/login/', \EmpleadoApi::class . ':LoginEmpleado');
     $app->get('/empleado/ingresos/', \EmpleadoApi::class . ':IngresosAlSistema')
     ->add(\Middleware::class . ':ValidarSocio')
@@ -94,13 +72,8 @@ return function (App $app) {
     ->add(\Middleware::class . ':ValidarSocio')
     ->add(\Middleware::class . ':ValidarToken'); 
     $app->post('/empleado/alta/', \EmpleadoApi::class . ':AltaEmpleado');
-    // ->add(\Middleware::class . ':ValidarSocio')
-    // ->add(\Middleware::class . ':ValidarToken');
-
     $app->get('/usuario/buscar/{idUsuario}', \EmpleadoApi::class . ':BuscarUsuario');    
     $app->post('/usuario/foto/', \EmpleadoApi::class . ':GuardarFoto');
-
-
     $app->get('/empleado/listado/', \EmpleadoApi::class . ':ListadoEmpleados')
     ->add(\Middleware::class . ':ValidarSocio')
     ->add(\Middleware::class . ':ValidarToken');    
@@ -116,41 +89,20 @@ return function (App $app) {
 
     //MESA
     $app->get('/mesa/disponibles/', \MesaApi::class . ':GetMesasVacias');
-    $app->get('/mesa/disponibles/mozo/', \MesaApi::class . ':GetMesasVaciasMozo');
-    
+    $app->get('/mesa/disponibles/mozo/', \MesaApi::class . ':GetMesasVaciasMozo');    
     $app->post('/mesa/listaEspera/', \MesaApi::class . ':AgregarAListaDeEspera');
     $app->get('/mesa/actualizar/{idCliente}', \MesaApi::class . ':ActualizarClienteEnEspera');
     $app->post('/mesa/asignada/', \MesaApi::class . ':CambiarEstadoMesaAsignada');
     $app->get('/clientes/espera/', \MesaApi::class . ':VerClientesEnEspera');
-
     $app->get('/mesa/estado/{idEstado}', \MesaApi::class . ':ObtenerMesasConEstado');
-
-    
-    
-    
-
-
-
     $app->post('/mesa/cargar/', \MesaApi::class . ':CargarMesa')
     ->add(\Middleware::class . ':SumarOperacion')
     ->add(\Middleware::class . ':ValidarMozo')
     ->add(\Middleware::class . ':ValidarToken');
     $app->post('/mesa/estado/esperando/', \MesaApi::class . ':CambiarEstadoClienteEsperandoPedido');
-    // ->add(\Middleware::class . ':SumarOperacion')
-    // ->add(\Middleware::class . ':ValidarMozo')
-    // ->add(\Middleware::class . ':ValidarToken'); 
     $app->post('/mesa/estado/comiendo/', \MesaApi::class . ':CambiarEstadoClienteComiendo');
-    // ->add(\Middleware::class . ':SumarOperacion')
-    // ->add(\Middleware::class . ':ValidarMozo')
-    // ->add(\Middleware::class . ':ValidarToken'); 
     $app->post('/mesa/estado/pagando/', \MesaApi::class . ':CambiarEstadoClientePagando');
-    // ->add(\Middleware::class . ':SumarOperacion')
-    // ->add(\Middleware::class . ':ValidarMozo')
-    // ->add(\Middleware::class . ':ValidarToken');
-    $app->post('/mesa/estado/cerrada/', \MesaApi::class . ':CambiarEstadoCerrada')
-    ->add(\Middleware::class . ':SumarOperacion')
-    ->add(\Middleware::class . ':ValidarSocio')
-    ->add(\Middleware::class . ':ValidarToken');
+    $app->post('/mesa/estado/cerrada/', \MesaApi::class . ':CambiarEstadoCerrada');
     $app->get('/mesa/mas_usada/', \MesaApi::class . ':LaMasUsada')
     ->add(\Middleware::class . ':ValidarSocio')
     ->add(\Middleware::class . ':ValidarToken');

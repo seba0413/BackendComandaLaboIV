@@ -218,7 +218,7 @@ class EmpleadoApi
             $usuarioDao = new App\Models\Empleado; 
 
             $usuario = $usuarioDao  ->where('id', '=', $idUsuario)
-                                    ->select('id','usuario', 'foto')
+                                    ->select('id','usuario', 'id_sector', 'foto')
                                     ->first();
 
             return $response->withJson(array("Estado"=>"Ok", "Usuario"=>$usuario));
@@ -250,12 +250,21 @@ class EmpleadoApi
             $usuarioDao = new App\Models\Empleado;
 
             $usuario = $usuarioDao->where('id', '=', $idUsuario)->first();
-            $usuario->id_tipoEmpleado = $idTipoUsuario;
-            $usuario->id_sector = $idTipoUsuario;
-            $usuario->activo = 1; 
-            $usuario->save();
+            
+            if($usuario)
+            {
+                $usuario->id_tipoEmpleado = $idTipoUsuario;
+                $usuario->id_sector = $idTipoUsuario;
+                $usuario->activo = 1; 
+                $usuario->save();
 
-            return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Tipo de usuario asignado"));
+                return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Tipo de usuario asignado"));
+            }
+            else
+            {
+                return $response->withJson(array("Estado"=>"Ok", "Mensaje"=>"Usuario no encontrado"));
+            }
+            
         }
         catch(Exception $e)
         {
@@ -702,7 +711,8 @@ class EmpleadoApi
 
     public function GuardarFoto($request, $response, $args)
     {
-        $url = 'http://localhost:80/apiComanda/tp_pg3/public/fotos/';
+        // $url = 'http://localhost:80/apiComanda/tp_pg3/public/fotos/';
+        $url = 'https://comanda-seba-pas.000webhostapp.com/public/fotos/';
         try
         {
             $foto = $_FILES['image'];

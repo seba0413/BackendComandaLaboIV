@@ -54,7 +54,7 @@ class PedidoApi
             $pedido->id_mesa = $idMesa;
             $pedido->id_producto = $idProducto;
             $pedido->cantidad = $cantidad;
-            $pedido->nombreCliente = $nombreCliente;
+            // $pedido->nombreCliente = $nombreCliente;
             $pedido->idCliente = $idCliente; 
             $pedido->id_estadoPedido = 1;
             $pedido->codigo = $codigo;
@@ -96,11 +96,12 @@ class PedidoApi
     {
         try
         {        
-            $payload = $request->getAttribute("payload")["Payload"];
-            $infoEmpleado = $payload->data;
-            $estadoPedido = $args['estadoPedido'];
-
-            $idSector = $infoEmpleado->id_sector;
+            // $payload = $request->getAttribute("payload")["Payload"];
+            // $infoEmpleado = $payload->data;
+            $data = file_get_contents('php://input');
+            $pedidoAux = json_decode($data);
+            $estadoPedido = $pedidoAux->estadoPedido;
+            $idSector = $pedidoAux->idSector;
 
             $pedido = new App\Models\Pedido;
 
@@ -134,8 +135,8 @@ class PedidoApi
     {
         try
         {
-            $payload = $request->getAttribute("payload")["Payload"];
-            $infoEmpleado = $payload->data;
+            // $payload = $request->getAttribute("payload")["Payload"];
+            // $infoEmpleado = $payload->data;
 
             $data = file_get_contents('php://input');
             $pedidoAux = json_decode($data);
@@ -155,7 +156,7 @@ class PedidoApi
                 $pedidoATomar->id_estadoPedido = 2;
                 $pedidoATomar->tiempoEstimado = $tiempoEstimado;
                 $pedidoATomar->horaEntregaEstimada = $horaEntregaEstimada;
-                $pedidoATomar->id_empleado = $infoEmpleado->id;
+                // $pedidoATomar->id_empleado = $infoEmpleado->id;
                 $pedidoATomar->save();
                 return $response->withJson(array("Estado" => "Ok", "Mensaje" => "Pedido en preparacion"));
             }
@@ -172,14 +173,17 @@ class PedidoApi
 
     public function ServirPedido($request, $response, $args)
     {
-        $payload = $request->getAttribute("payload")["Payload"];
-        $infoEmpleado = $payload->data;
-        $id = $infoEmpleado->id;
+        // $payload = $request->getAttribute("payload")["Payload"];
+        // $infoEmpleado = $payload->data;
+        $data = file_get_contents('php://input');
+        $pedidoAux = json_decode($data);
+        $codigo = $pedidoAux->codigo;
+        
         $horaEntrega = date('H:i');
         $pedido = new App\Models\Pedido;
         try
         {
-            $pedidoAServir = $pedido->where([['id_estadoPedido', '=', 2],['id_empleado', '=', $id],])->firstOrFail();        
+            $pedidoAServir = $pedido->where([['codigo', '=', $codigo],['id_estadoPedido', '=', 2],])->firstOrFail();        
             $pedidoAServir->id_estadoPedido = 3;
             $pedidoAServir->horaEntrega = $horaEntrega;
             $pedidoAServir->save();
