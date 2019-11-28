@@ -410,6 +410,7 @@ class MesaApi
                         ->update(['id_estadoMesa' => 4]);
 
                 $mesaActual->id_estado = 4;
+                $mesaActual->id_clienteActual = null; 
                 $mesaActual->save();
                 $mensaje = array("Estado" => "Ok", "Mensaje" => "Mesa " . $mesaActual->id . " cerrada");
             }

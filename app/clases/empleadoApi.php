@@ -241,11 +241,8 @@ class EmpleadoApi
     {
         try
         {
-            $data = file_get_contents('php://input');
-            $usuarioAux = json_decode($data);
-    
-            $idUsuario = $usuarioAux->idUsuario;
-            $idTipoUsuario = $usuarioAux->idTipoUsuario;
+            $idUsuario = $args['idUsuario'];
+            $idTipoUsuario = $args['idTipoUsuario'];
 
             $usuarioDao = new App\Models\Empleado;
 

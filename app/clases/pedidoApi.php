@@ -34,6 +34,19 @@ class PedidoApi
         return $response->withJson($listaProductos, 200);
     }
 
+    public function GetTodosLosPedidosConEstado($request, $response, $args)
+    {
+        $pedidosDao = new App\Models\Pedido;
+
+        $pedidos = $pedidosDao  ->where('id_estadoPedido', '!=', 4)
+                                ->join('estado_pedidos', 'estado_pedidos.id', '=', 'pedidos.id_estadoPedido')
+                                ->join('productos', 'productos.id', '=', 'pedidos.id_producto')
+                                ->select('pedidos.codigo', 'pedidos.id_mesa', 'productos.nombre', 'estado_pedidos.estado')
+                                ->get();
+
+        return $response->withJson($pedidos, 200);                        
+    }
+
     public function CargarPedido($request, $response, $args)
     {
         try

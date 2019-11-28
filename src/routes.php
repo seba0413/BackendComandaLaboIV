@@ -27,9 +27,12 @@ return function (App $app) {
     $app->get('/pedido/vino/', \PedidoApi::class . ':GetVinos');
     $app->get('/pedido/cerveza/', \PedidoApi::class . ':GetCervezas');
     $app->get('/pedido/postre/', \PedidoApi::class . ':GetPostres');
+    $app->get('/pedidos/estado/', \PedidoApi::class . ':GetTodosLosPedidosConEstado');
+
+    
     $app->post('/pedido/cargar/', \PedidoApi::class . ':CargarPedido');    
     $app->post('/pedido/pendientes/', \PedidoApi::class . ':VerPedidosPendientes');
-    
+
     $app->post('/pedido/tomar/', \PedidoApi::class . ':TomarPedido');
     $app->post('/pedido/servir/', \PedidoApi::class . ':ServirPedido');
     $app->get('/pedido/estados/', \PedidoApi::class . ':VerEstadoPedidos');    
@@ -57,7 +60,7 @@ return function (App $app) {
     $app->get('/cliente/estado/{idCliente}', \EmpleadoApi::class . ':RecuperarDatosCliente');
     $app->post('/cliente/buscar/', \EmpleadoApi::class . ':BuscarCliente');
     $app->get('/cliente/estado/mozo/{idCliente}', \EmpleadoApi::class . ':MozoRecuperaDatosCliente');
-    $app->post('/usuario/asignarTipo/', \EmpleadoApi::class . ':AsignarTipoUsuario');   
+    $app->get('/usuario/asignar/tipo/{idUsuario}/{idTipoUsuario}', \EmpleadoApi::class . ':AsignarTipoUsuario');   
     $app->post('/empleado/login/', \EmpleadoApi::class . ':LoginEmpleado');
     $app->get('/empleado/ingresos/', \EmpleadoApi::class . ':IngresosAlSistema')
     ->add(\Middleware::class . ':ValidarSocio')
