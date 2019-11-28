@@ -62,6 +62,8 @@ return function (App $app) {
     $app->get('/cliente/estado/mozo/{idCliente}', \EmpleadoApi::class . ':MozoRecuperaDatosCliente');
     $app->get('/usuario/asignar/tipo/{idUsuario}/{idTipoUsuario}', \EmpleadoApi::class . ':AsignarTipoUsuario');   
     $app->post('/empleado/login/', \EmpleadoApi::class . ':LoginEmpleado');
+    $app->get('/usuarios/', \EmpleadoApi::class . ':ListadoDeUsuarios');
+    
     $app->get('/empleado/ingresos/', \EmpleadoApi::class . ':IngresosAlSistema')
     ->add(\Middleware::class . ':ValidarSocio')
     ->add(\Middleware::class . ':ValidarToken');      

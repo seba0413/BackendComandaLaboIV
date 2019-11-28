@@ -237,6 +237,15 @@ class EmpleadoApi
         return $response->withJson($listaTipos, 200);
     }
 
+    public function ListadoDeUsuarios($request, $response, $args)
+    {
+        $usuariosDao = new App\Models\Empleado; 
+        $usuarios = $usuariosDao->select('usuario', 'clave')
+                                ->get();
+
+        return $response->withJson($usuarios, 200);                        
+    }
+
     public function AsignarTipoUsuario($request, $response, $args)
     {
         try
